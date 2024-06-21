@@ -1,0 +1,120 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Function prototypes
+void initializeBoard(int board[], int size);
+void displayBoard(int board[], int size);
+void initializeSnakesAndLadders(int board[]);
+int rollDice();
+int movePlayer(int currentPlayerPosition, int diceRoll, int board[]);
+
+int main() {
+  // Initialize random seed
+  srand(time(NULL));
+
+  // Constants
+  const int BOARD_SIZE = 100;
+  const int WINNING_POSITION = 100;
+
+  // Game variables
+  int board[BOARD_SIZE];
+  int currentPlayerPosition = 1; // Starting position of the player
+
+  // Initialize board
+  initializeBoard(board, BOARD_SIZE);
+  initializeSnakesAndLadders(board);
+
+  printf("Welcome to Snake and Ladder Game!\n");
+  printf("Reach position 100 to win the game.\n\n");
+
+  while (currentPlayerPosition < WINNING_POSITION) {
+    // Display current board state
+    displayBoard(board, BOARD_SIZE);
+
+    // Roll dice and move player
+    int diceRoll = rollDice();
+    printf("You rolled a %d.\n", diceRoll);
+
+    currentPlayerPosition = movePlayer(currentPlayerPosition, diceRoll, board);
+
+    // Check for winning condition
+    if (currentPlayerPosition >= WINNING_POSITION) {
+      printf("Congratulations! You reached position 100 and won the game!\n");
+      break;
+    }
+
+    printf("Current position is: %d\n", currentPlayerPosition);
+
+    // Wait for user to press Enter for the next move
+    printf("Press Enter to roll the dice...\n");
+    getchar(); // Pause until Enter is pressed
+  }
+
+  return 0;
+}
+
+// Initialize the board with default values
+void initializeBoard(int board[], int size) {
+  for (int i = 0; i < size; ++i) {
+    board[i] = i + 1;
+  }
+}
+
+// Display the board with player's current position
+void displayBoard(int board[], int size) {
+  printf("Current Board:\n");
+  for (int i = size - 1; i >= 0; --i) {
+    printf("%3d ", board[i]);
+    if ((i + 1) % 10 == 0) {
+      printf("\n");
+    }
+  }
+  printf("\n");
+}
+
+// Initialize positions of snakes and ladders on the board
+void initializeSnakesAndLadders(int board[]) {
+  // Snakes
+  board[16] = 6;
+  board[47] = 26;
+  board[49] = 11;
+  board[56] = 53;
+  board[62] = 19;
+  board[64] = 60;
+  board[87] = 24;
+  board[93] = 73;
+  board[95] = 75;
+  board[98] = 78;
+
+  // Ladders
+  board[1] = 38;
+  board[4] = 14;
+  board[9] = 31;
+  board[21] = 42;
+  board[28] = 84;
+  board[36] = 44;
+  board[51] = 67;
+  board[71] = 91;
+  board[80] = 100;
+}
+
+// Simulate rolling a 6-sided dice
+int rollDice() { return rand() % 6 + 1; }
+
+// Move the player according to the dice roll and board configuration
+int movePlayer(int currentPlayerPosition, int diceRoll, int board[]) {
+  int newPosition = currentPlayerPosition + diceRoll;
+
+  // Check if the new position exceeds the board size
+  if (newPosition > 100) {
+    return currentPlayerPosition;
+  }
+
+  // Check if the new position lands on a snake or ladder
+  if (board[newPosition - 1] != newPosition) {
+    printf("Oops! You landed on a snake or ladder.\n");
+  }
+
+  return board[newPosition - 1];
+}
